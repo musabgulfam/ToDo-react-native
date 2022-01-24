@@ -79,17 +79,24 @@ export default function TaskListScreen(props) {
 
     return (
         <View style={styles.contianer}>
-            <View>
+            <View style={{
+                marginVertical: 20,
+                backgroundColor: '#C8C8C8',
+                height: 50,
+                justifyContent: 'center',
+                borderRadius: 20,
+                paddingLeft: 20
+            }}>
                 <TextInput
                     value={searchText}
                     onChangeText={text => setSearchText(text)}
                 />
             </View>
-            {tasks.length > 0 ? <FlatList
-                data={tasks}
-                renderItem={({ item, index }) => {
+            {
+                searchText.length > 0 ? tasks.filter(task => {
+                    return task.title === searchText
+                }).map((item, index) => {
                     return (
-
                         <View style={styles.taskItemContainer}>
                             <View>
                                 <Text style={styles.itemTitleStyle}>{item.title}</Text>
@@ -129,11 +136,56 @@ export default function TaskListScreen(props) {
                             </View>
                         </View>
                     );
-                }}
-                showsVerticalScrollIndicator={false}
-            /> : <View style={styles.noTaskTextContainer}>
-                <Text style={styles.noTaskTextStyle}>You are all done!</Text>
-            </View>}
+                }) :
+                    tasks.length > 0 ? <FlatList
+                        data={tasks}
+                        renderItem={({ item, index }) => {
+                            return (
+
+                                <View style={styles.taskItemContainer}>
+                                    <View>
+                                        <Text style={styles.itemTitleStyle}>{item.title}</Text>
+                                        <Text style={styles.taskDiscriptionStyle}>{item.activity}</Text>
+                                    </View>
+                                    <View
+                                        style={styles.secondaryContainer}
+                                    >
+                                        <View>
+                                            <CheckBox
+                                                disabled={false}
+                                                value={item.completed}
+                                                onValueChange={newValue => {
+                                                    const allTasks = tasks;
+                                                    allTasks[index].completed = newValue
+                                                    setTasks([...allTasks]);
+                                                }}
+                                                tintColor="black"
+                                                onTintColor="white"
+                                                onCheckColor="white"
+                                            />
+                                        </View>
+                                        <TouchableOpacity
+                                            style={styles.binView}
+                                            onPress={_ => {
+                                                deleteTask(item.id)
+                                            }}
+                                        >
+                                            <Image
+                                                source={require('../../assets/bin.png')}
+                                                style={{
+                                                    width: 30,
+                                                    height: 30
+                                                }}
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            );
+                        }}
+                        showsVerticalScrollIndicator={false}
+                    /> : <View style={styles.noTaskTextContainer}>
+                        <Text style={styles.noTaskTextStyle}>You are all done!</Text>
+                    </View>}
             <View style={styles.addIconContainer}>
                 <TouchableOpacity
                     style={styles.buttonStyle}
